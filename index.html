@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chúc mừng sinh nhật</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      height: 100%;
+      touch-action: manipulation;
+      perspective: 1500px;
+    }
+
+    #startOverlay {
+      position: fixed;
+      z-index: 9999;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #camera {
+      width: 100%;
+      height: 100%;
+      display: none;
+      transform-style: preserve-3d;
+    }
+
+    #scene {
+      position: absolute;
+      top: -100vh;
+      left: -100vw;
+      width: 300vw;
+      height: 300vh;
+    }
+
+    .falling {
+      position: absolute;
+      font-size: 40px;
+      font-weight: bold;
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none;
+      text-shadow: 0 0 10px white;
+      animation: fall linear;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-50px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(300vh);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="startOverlay">🎉 Nhấn vào màn hình để bắt đầu điều bất ngờ! 🎵</div>
+  <div id="camera">
+    <div id="scene"></div>
+  </div>
+
+  <audio id="bgMusic" preload="auto" loop playsinline>
+    <source src="happy-birthday-258264.mp3" type="audio/mpeg" />
+    Trình duyệt của bạn không hỗ trợ âm thanh.
+  </audio>
+
+  <script>
+    const startOverlay = document.getElementById("startOverlay");
+    const camera = document.getElementById("camera");
+    const scene = document.getElementById("scene");
+    const music = document.getElementById("bgMusic");
+
+    const words = [
+      "Chúc mừng sinh nhật", "🎉", "🎂", "💖", "Tuổi mới vui vẻ",
+      "🎁", "💗", "🥳", "🎊", "Sinh nhật vui vẻ!"
+    ];
+
+    function createWord() {
+      const span = document.createElement("span");
+      span.className = "falling";
+      span.textContent = words[Math.floor(Math.random() * words.length)];
+
+      const hue = Math.floor(Math.random() * 360);
+      span.style.color = `hsl(${hue}, 100%, 70%)`;
+      span.style.textShadow = `0 0 10px hsl(${hue}, 100%, 70%), 0 0 20px hsl(${hue}, 100%, 70%)`;
+
+      const x = Math.random() * window.innerWidth * 3;
+      const z = (Math.random() - 0.5) * 2000;
+
+      span.style.left = `${x}px`;
+      span.style.top = `0px`;
+      span.style.transform = `translateZ(${z}px)`;
+      span.style.animationDuration = (4 + Math.random() * 2) + "s";
+
+      span.addEventListener("animationend", () => span.remove());
+      scene.appendChild(span);
+    }
+
+    function enableRotation() {
+      let isDragging = false, lastX = 0, rotY = 0;
+
+      document.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        lastX = e.clientX;
+      });
+
+      document.addEventListener("mouseup", () => isDragging = false);
+
+      document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - lastX;
+        lastX = e.clientX;
+        rotY += dx * 0.3;
+        rotY = Math.max(-40, Math.min(40, rotY));
+        camera.style.transform = `rotateY(${rotY}deg)`;
+      });
+
+      document.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          lastX = e.touches[0].clientX;
+        }
+      });
+
+      document.addEventListener("touchend", () => isDragging = false);
+
+      document.addEventListener("touchmove", (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - lastX;
+        lastX = e.touches[0].clientX;
+        rotY += dx * 0.3;
+        rotY = Math.max(-40, Math.min(40, rotY));
+        camera.style.transform = `rotateY(${rotY}deg)`;
+      }, { passive: true });
+    }
+
+    function startExperience() {
+      music.play().catch(err => {
+        console.warn("Không thể phát nhạc:", err);
+      });
+
+      startOverlay.style.display = "none";
+      camera.style.display = "block";
+
+      setInterval(createWord, 55);
+      enableRotation();
+    }
+
+    ["click", "touchstart"].forEach(evt => {
+      startOverlay.addEventListener(evt, startExperience, { once: true });
+    });
+  </script>
+</body>
+</html>

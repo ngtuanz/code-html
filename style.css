@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  overflow: hidden;
+  perspective: 2500px; /* tạo chiều sâu 3D xa hơn */
+}
+
+#container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Chữ rơi */
+.falling {
+  position: absolute;
+  font-size: 15px; /* nhỏ hơn để tạo cảm giác xa */
+  font-weight: bold;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  text-shadow: 
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 15px #0ff,
+    0 0 20px #0ff,
+    0 0 30px #0ff,
+    0 0 40px #0ff; /* neon cơ bản, sẽ được ghi đè bằng JS màu random */
+  animation: fall linear;
+}
+
+/* Animation rơi chữ */
+@keyframes fall {
+  0% {
+    transform: translateY(-50px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100vh + 100px));
+    opacity: 1;
+  }
+}
