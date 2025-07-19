@@ -72,10 +72,12 @@
 <body>
 
   <div id="startOverlay">🎉 Nhấn vào màn hình để bắt đầu điều bất ngờ! 🎵</div>
+
   <div id="camera">
     <div id="scene"></div>
   </div>
 
+  <!-- Nhạc Happy Birthday -->
   <audio id="bgMusic" preload="auto" loop playsinline>
     <source src="https://ngtuanz.github.io/code-html/happy-birthday-258264.mp3" type="audio/mpeg" />
     Trình duyệt của bạn không hỗ trợ âm thanh.
@@ -151,19 +153,22 @@
       }, { passive: true });
     }
 
-    // ✅ Bắt đầu khi chạm/mouse click (trực tiếp trong event)
+    function startExperience() {
+      // Phát nhạc trong sự kiện click/touch
+      music.play().catch(err => {
+        console.warn("Không thể phát nhạc:", err);
+      });
+
+      startOverlay.style.display = "none";
+      camera.style.display = "block";
+
+      setInterval(createWord, 55);
+      enableRotation();
+    }
+
+    // Ràng buộc sự kiện click/touch để phát nhạc đúng cách
     ["click", "touchstart"].forEach(evt => {
-      startOverlay.addEventListener(evt, () => {
-        music.play().catch(err => {
-          console.warn("Không thể phát nhạc:", err);
-        });
-
-        startOverlay.style.display = "none";
-        camera.style.display = "block";
-
-        setInterval(createWord, 55);
-        enableRotation();
-      }, { once: true });
+      startOverlay.addEventListener(evt, startExperience, { once: true });
     });
   </script>
 </body>
