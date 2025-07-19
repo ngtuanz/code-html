@@ -151,20 +151,19 @@
       }, { passive: true });
     }
 
-    function startExperience() {
-      music.play().catch(err => {
-        console.warn("Không thể phát nhạc:", err);
-      });
-
-      startOverlay.style.display = "none";
-      camera.style.display = "block";
-
-      setInterval(createWord, 55);
-      enableRotation();
-    }
-
+    // ✅ Bắt đầu khi chạm/mouse click (trực tiếp trong event)
     ["click", "touchstart"].forEach(evt => {
-      startOverlay.addEventListener(evt, startExperience, { once: true });
+      startOverlay.addEventListener(evt, () => {
+        music.play().catch(err => {
+          console.warn("Không thể phát nhạc:", err);
+        });
+
+        startOverlay.style.display = "none";
+        camera.style.display = "block";
+
+        setInterval(createWord, 55);
+        enableRotation();
+      }, { once: true });
     });
   </script>
 </body>
